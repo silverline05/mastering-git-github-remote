@@ -9,28 +9,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
-      - run: npm test
 
-  publish-gpr:
-    needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+
+    strategy:
+        matrix:
+            node-version: [10.x]
+            #See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+            
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
         with:
-          node-version: 16
-          registry-url: https://npm.pkg.github.com/
+          node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm test
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
